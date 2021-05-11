@@ -1,0 +1,108 @@
+<?php if ($this->previewMode): ?>
+
+    <div class="form-control">
+        <?= $value ?>
+    </div>
+
+<?php else: ?>
+    <div id="widget-<?= $this->getId('input') ?>" class="mappicker-widget">
+        <input
+            type="text"
+            id="<?= $this->getId('input') ?>"
+            name="<?= $name ?>"
+            value="<?= $value ?>"
+            class="form-control"
+            v-model="address"
+            autocomplete="off"/>
+        <button type="button"
+                class="btn btn-primary"
+                @click="$refs.modal.show()"
+        >
+            Карта
+        </button>
+
+        <backend-component-modal
+            ref="modal"
+            :aria-labeled-by="modalTitleId"
+            :unique-key="uniqueKey"
+            size="large"
+            :draggable="false"
+        >
+            <template v-slot:content>
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        <span v-if="address">{{ address }}</span>
+                        <span v-else>Кликните по карте, для получения адреса</span>
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div id="yandex-map">
+                        <yandex-map
+                            :coords="coords"
+                            :controls="controls"
+                            zoom=10
+                            @click="onMapClick"
+                        >
+                            <ymap-marker
+                                :coords="coords"
+                                marker-id="marker-<?= $this->getId('input') ?>"
+                                :icon="markerIcon"
+                                :key="address"
+                            />
+                        </yandex-map>
+                    </div>
+                    <button type="button"
+                            class="btn btn-primary pull-right m-b"
+                            :disabled="!address"
+                            @click="$refs.modal.hide()"
+                    >
+                        Выбрать этот адрес
+                    </button>
+                </div>
+            </template>
+        </backend-component-modal>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            new Vue({
+                el: '#widget-<?= $this->getId('input') ?>',
+                data: function () {
+                    return {
+                        address: '',
+                        uniqueKey: $.oc.domIdManager.generate('modal-mappicker'),
+                        modalTitleId: $.oc.domIdManager.generate('modal-mappicker-title'),
+                        coords: [55.753994, 37.622093],
+                        controls: [],
+                        markerIcon: {
+                            content: '',
+                        }
+                    };
+                },
+                methods: {
+                    onMapClick(event) {
+                        this.coords = event.get('coords');
+                        this.getAddress(this.coords);
+                    },
+                    getAddress(coords) {
+                        vm = this;
+                        vm.markerIcon.content = '';
+                        ymaps.geocode(this.coords).then(function (res) {
+                            let firstGeoObject = res.geoObjects.get(0);
+                            vm.address = firstGeoObject.getAddressLine();
+                            vm.markerIcon.content = vm.address;
+                        });
+                    }
+                },
+                async mounted() {
+                    await window['vue-yandex-maps'].loadYmap({
+                        apiKey: "ВАШ АПИ КЛЮЧ",
+                        lang: "ru_RU",
+                        coordorder: "latlong",
+                        version: "2.1"
+                    });
+                },
+            });
+        });
+    </script>
+<?php endif ?>

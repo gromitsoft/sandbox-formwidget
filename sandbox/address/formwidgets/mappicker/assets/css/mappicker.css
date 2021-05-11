@@ -1,0 +1,18 @@
+/*
+ * This is a sample StyleSheet file used by MapPicker
+ *
+ * You can delete this file if you want
+ */
+.mappicker-widget {
+    display: flex;
+    gap: 15px;
+}
+
+#yandex-map {
+    height: 400px;
+    margin-bottom: 20px;
+}
+
+.ymap-container {
+    height: 100%;
+}

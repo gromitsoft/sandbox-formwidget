@@ -1,0 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: Address
+
+# Model Form Field configuration
+form: $/sandbox/address/models/address/fields.yaml
+
+# Model Class name
+modelClass: Sandbox\Address\Models\Address
+
+# Default redirect location
+defaultRedirect: sandbox/address/addresses
+
+# Create page
+create:
+    title: backend::lang.form.create_title
+    redirect: sandbox/address/addresses/update/:id
+    redirectClose: sandbox/address/addresses
+
+# Update page
+update:
+    title: backend::lang.form.update_title
+    redirect: sandbox/address/addresses
+    redirectClose: sandbox/address/addresses
+
+# Preview page
+preview:
+    title: backend::lang.form.preview_title
